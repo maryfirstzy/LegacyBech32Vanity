@@ -44,7 +44,7 @@ def witness_program_to_bech32_address(witness_program):
 def generate_vanity_address(prefix):
     """
     Loops until an address starting with 'bc1q' + prefix is found.
-    Each character in the prefix increases complexity by exactly 2^5 (32x).
+    Each character in the prefix increases complexity by exactly 2^1 (2x).
     """
     # Lowercase the prefix since Bech32 ignores character case
     prefix = prefix.lower()
