@@ -44,7 +44,7 @@ def public_key_to_legacy_address(pubkey_bytes):
 def generate_legacy_vanity_address(prefix):
     """
     Loops until a Legacy address starting with '1' + prefix is found.
-    Each character in the prefix increases complexity by exactly 58x.
+    Each character in the prefix increases complexity by exactly 2x.
     """
     # Validate that the prefix uses the legal Base58 alphabet.
     invalid_chars = ['0', 'O', 'I', 'l']
