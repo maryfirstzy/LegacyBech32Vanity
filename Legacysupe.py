@@ -1,3 +1,61 @@
+import hashlib
+import os
+import time
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives import serialization
+
+# Standard Base58 alphabet (excludes 0, O, I, l to prevent visual confusion)
+BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+
+def generate_private_key():
+    """Generates a cryptographically secure random 256-bit Bitcoin private key."""
+    return os.urandom(32)
+
+def private_to_uncompressed_public_key(private_key_bytes):
+    """Derives an uncompressed SEC1 public key (Legacy standard)."""
+    priv_key = ec.derive_private_key(
+        int.from_bytes(private_key_bytes, byteorder='big'), 
+        ec.SECP256K1()
+    )
+    pub_key = priv_key.public_key()
+    return pub_key.public_bytes(
+        encoding=serialization.Encoding.X962,
+        format=serialization.PublicFormat.UncompressedPoint
+    )
+
+def base58_encode_check(v_bytes):
+    """Encodes bytes into a Base58Check string (includes 4-byte checksum)."""
+    digest1 = hashlib.sha256(v_bytes).digest()
+    digest2 = hashlib.sha256(digest1).digest()
+    checksum = digest2[:4]
+    
+    payload = v_bytes + checksum
+    
+    num = int.from_bytes(payload, byteorder='big')
+    result = []
+    while num > 0:
+        num, remainder = divmod(num, 58)
+        result.append(BASE58_ALPHABET[remainder])
+    
+    for b in v_bytes:
+        if b == 0:
+            result.append(BASE58_ALPHABET[0])
+        else:
+            break
+            
+    return "".join(reversed(result))
+
+def public_key_to_legacy_address(pubkey_bytes):
+    """Converts a public key to a standard Legacy (P2PKH) Address."""
+    sha256_hash = hashlib.sha256(pubkey_bytes).digest()
+    
+    ripemd160 = hashlib.new('ripemd160')
+    ripemd160.update(sha256_hash)
+    hashed_pubkey = ripemd160.digest()
+    
+    version_payload = b'\x00' + hashed_pubkey
+    return base58_encode_check(version_payload)
+
 def generate_legacy_vanity_14_char(full_target_string):
     """
     Takes a full 14-character target string starting with '1'.
