@@ -101,6 +101,6 @@ def generate_vanity_address(prefix):
 if __name__ == "__main__":
     # Choose a short prefix to test. Every added character scales difficulty by 32x.
     # Allowed alphabet characters: qpzry9x8gf2tvdw0s3jn54khce6mua7l
-    TARGET_PREFIX = "r9" 
+    TARGET_PREFIX = "r99999999" 
     
     generate_vanity_address(TARGET_PREFIX)
