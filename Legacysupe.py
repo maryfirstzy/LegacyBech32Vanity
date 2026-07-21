@@ -105,7 +105,7 @@ def generate_legacy_vanity_14_char(fixed_base, variable_char):
             break
 
 # EXAMPLE CONFIGURATION:
-# '1' (1 char) + 'SmithElGree' (12 chars) = 13 characters fixed base.
+# '1' (1 char) + 'SmithElGreee' (12 chars) = 13 characters fixed base.
 # 'n' (1 char) = The 14th character to search for at Difficulty 1.
-# Total string checked: '1SmithElGreen' (14 characters)
-generate_legacy_vanity_14_char(fixed_base="1SmithElGree", variable_char="n")
+# Total string checked: '1SmithElGreee' (14 characters)
+generate_legacy_vanity_14_char(fixed_base="1SmithElGreee", variable_char="n")
