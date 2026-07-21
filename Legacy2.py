@@ -56,6 +56,6 @@ def generate_flat_legacy_vanity(vanity_prefix):
 
 # Example Usage: Even with a long prefix like "Crypto", it finishes in ~58 attempts.
 try:
-    generate_flat_legacy_vanity("Crypto")
+    generate_flat_legacy_vanity("RoseCross")
 except ValueError as e:
     print(f"Error: {e}")
