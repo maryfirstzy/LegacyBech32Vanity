@@ -95,7 +95,7 @@ def generate_legacy_vanity_address(prefix):
 
 # Run the generator
 if __name__ == "__main__":
-    # Choose a short prefix to test. Every character increases difficulty by 58x.
+    # Choose a short prefix to test. Every character increases difficulty by 2x.
     # Avoid: 0, O, I, l
     # Case matters: "a" is different than "A"
     TARGET_PREFIX = "RoseCross" 
