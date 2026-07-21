@@ -18,7 +18,9 @@ def private_to_compressed_public_key(private_key_bytes):
     pub_key = priv_key.public_key()
     return pub_key.public_bytes(
         encoding=serialization.Encoding.X962,
-        format=serialization.PublicFormat.Compressed
+            return pub_key.public_bytes(
+        encoding=serialization.Encoding.X962,
+        format=serialization.PublicFormat.CompressedPoint  # <-- Fixed attribute
     )
 
 def public_key_to_witness_program(pubkey_bytes):
