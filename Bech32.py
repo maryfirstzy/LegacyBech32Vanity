@@ -18,9 +18,7 @@ def private_to_compressed_public_key(private_key_bytes):
     pub_key = priv_key.public_key()
     return pub_key.public_bytes(
         encoding=serialization.Encoding.X962,
-            return pub_key.public_bytes(
-        encoding=serialization.Encoding.X962,
-        format=serialization.PublicFormat.CompressedPoint  # <-- Fixed attribute
+        format=serialization.PublicFormat.CompressedPoint  # Fixed here
     )
 
 def public_key_to_witness_program(pubkey_bytes):
@@ -88,7 +86,7 @@ def generate_vanity_address(prefix):
                 print("\n" + "="*50)
                 print("SUCCESS! MATCH FOUND")
                 print("="*50)
-                print(f"Address:     {address}")
+                print(f"Address:           {address}")
                 print(f"Private Key (Hex): {priv_bytes.hex()}")
                 print(f"Total Attempts:    {attempts:,}")
                 print(f"Time Taken:        {elapsed:.2f} seconds")
