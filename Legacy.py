@@ -18,7 +18,7 @@ def private_to_compressed_public_key(private_key_bytes):
     pub_key = priv_key.public_key()
     return pub_key.public_bytes(
         encoding=serialization.Encoding.X962,
-        format=serialization.PublicFormat.Compressed
+        format=serialization.PublicFormat.CompressedPoint  # Fixed here
     )
 
 def public_key_to_legacy_address(pubkey_bytes):
@@ -46,7 +46,6 @@ def generate_legacy_vanity_address(prefix):
     Loops until a Legacy address starting with '1' + prefix is found.
     Each character in the prefix increases complexity by exactly 58x.
     """
-    # Base58 check allows mixed case, but vanity searches are case-sensitive.
     # Validate that the prefix uses the legal Base58 alphabet.
     invalid_chars = ['0', 'O', 'I', 'l']
     for char in prefix:
