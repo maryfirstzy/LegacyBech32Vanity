@@ -2,13 +2,22 @@ import hashlib
 import os
 import time
 import sys
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives import serialization
 
 # Standard Base58 alphabet
 BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 
+# Exact mathematical order of the secp256k1 curve used by Bitcoin
+SECP256K1_ORDER = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
+
 def generate_base_key():
     """Generates a secure random 256-bit baseline integer."""
-    return int.from_bytes(os.urandom(32), byteorder='big')
+    while True:
+        key_int = int.from_bytes(os.urandom(32), byteorder='big')
+        # Ensure the private key falls within the valid range for secp256k1
+        if 0 < key_int < SECP256K1_ORDER:
+            return key_int
 
 def base58_encode_check(v_bytes):
     """Encodes bytes into a Base58Check string (includes 4-byte checksum)."""
@@ -25,7 +34,7 @@ def base58_encode_check(v_bytes):
     
     for b in v_bytes:
         if b == 0:
-            result.append(BASE58_ALPHABET)
+            result.append(BASE58_ALPHABET[0])
         else:
             break
             
@@ -33,10 +42,6 @@ def base58_encode_check(v_bytes):
 
 def private_key_to_legacy_address(private_key_int):
     """Derives address from private key integer using standard EC mapping."""
-    from cryptography.hazmat.primitives.asymmetric import ec
-    from cryptography.hazmat.primitives import serialization
-    
-    # Convert integer back to 32 bytes
     private_key_bytes = private_key_int.to_bytes(32, byteorder='big')
     
     priv_key = ec.derive_private_key(private_key_int, ec.SECP256K1())
@@ -72,7 +77,6 @@ def run_optimized_vanity(target_prefix):
     attempts = 0
     start_time = time.time()
     
-    # Initialize secure baseline key point
     current_key_int = generate_base_key()
 
     while True:
@@ -84,17 +88,17 @@ def run_optimized_vanity(target_prefix):
             print(f"\nError processing keys: {e}")
             return
 
-        # Continuous status tracking line
         if attempts % 500 == 0:
             sys.stdout.write(f"\r[+] Engine working | Checked: {attempts:,} keys")
             sys.stdout.flush()
 
-        # Check for immediate prefix match
         if address.startswith(target_prefix):
             break
             
-        # Optimization step: increment the private key integer sequentially
-        current_key_int = (current_key_int + 1) % ec.SECP256K1.key_size
+        # Increment the private key integer safely within the secp256k1 bounds
+        current_key_int = (current_key_int + 1) % SECP256K1_ORDER
+        if current_key_int == 0:
+            current_key_int = 1
 
     elapsed_time = time.time() - start_time
     wif_key = private_key_to_wif(priv_bytes)
@@ -113,7 +117,6 @@ def run_optimized_vanity(target_prefix):
     with open(filename, "a") as f:
         f.write(log_output)
 
-    # Clear status line
     sys.stdout.write("\r" + " " * 70 + "\r")
     sys.stdout.flush()
 
